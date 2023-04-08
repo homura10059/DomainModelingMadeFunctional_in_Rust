@@ -1,12 +1,8 @@
-use std::error::Error;
-
-type Undefined = dyn Error;
-
-type CustomerInfo = Undefined;
-type SippingAddress = Undefined;
-type BillingAddress = Undefined;
-type OrderLine = Undefined;
-type BillingAmount = Undefined;
+struct CustomerInfo();
+struct SippingAddress();
+struct BillingAddress();
+struct OrderLine();
+struct BillingAmount();
 
 struct Order {
     customer_info: CustomerInfo,

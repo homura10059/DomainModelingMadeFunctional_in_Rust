@@ -2,9 +2,10 @@ use std::error::Error;
 
 type Undefined = dyn Error;
 
-type AcknowledgementSent = Undefined;
-type OrderPlaced = Undefined;
-type BillingOrderPlaced = Undefined;
+struct AcknowledgementSent();
+struct OrderPlaced();
+struct BillingAddress();
+struct BillingOrderPlaced();
 
 struct PlaceOrderEvent {
     acknowledgement_sent: AcknowledgementSent,
@@ -14,15 +15,15 @@ struct PlaceOrderEvent {
 }
 
 struct EnvelopeContents(String);
-type QuoteForm = Undefined;
-type OrderForm = Undefined;
+struct QuoteForm();
+struct OrderForm();
 enum CategorisedMail {
     Quote(QuoteForm),
     Order(OrderForm),
 }
 
 // fn categorise_inbound_mail(envelope: EnvelopeContents) -> CategorisedMail {}
-type ProductCatalog = Undefined;
+struct ProductCatalog();
 
 struct CalculatePricesInput {
     order_form: OrderForm,
