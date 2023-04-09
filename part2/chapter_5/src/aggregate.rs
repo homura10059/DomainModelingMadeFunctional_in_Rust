@@ -34,7 +34,7 @@ fn change_order_line_price(order: &Order, order_line_id: &OrderLineId, new_price
         .order_lines
         .iter()
         .position(|line| line.order_line_id == order_line_id.to_owned())
-        .unwrap();
+        .unwrap(); // ほんとはエラー処理必要
 
     let order_line = order.order_lines.get(order_line_pos).unwrap().clone();
 
