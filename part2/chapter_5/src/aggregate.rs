@@ -33,14 +33,14 @@ fn change_order_line_price(order: &Order, order_line_id: &OrderLineId, new_price
     let order_line_pos = order
         .order_lines
         .iter()
-        .position(|line| line.order_line_id == order_line_id.to_owned())
+        .position(|line| line.order_line_id == *order_line_id)
         .unwrap(); // ほんとはエラー処理必要
 
     let order_line = order.order_lines.get(order_line_pos).unwrap().clone();
 
     let new_order_line = OrderLine {
         price: new_price.clone(),
-        ..order_line.clone()
+        ..order_line
     };
 
     let mut new_order_lines = order.order_lines.clone();
@@ -51,13 +51,12 @@ fn change_order_line_price(order: &Order, order_line_id: &OrderLineId, new_price
         .iter()
         .map(|line| line.price.0 * line.quantity.0)
         .sum::<i64>();
-    let new_order = Order {
+
+    Order {
         order_lines: new_order_lines,
         total_price: Price(new_total_price),
-        ..order.clone()
-    };
-
-    new_order
+        // ..order.clone() // 他の要素があるなら必要
+    }
 }
 
 #[cfg(test)]
