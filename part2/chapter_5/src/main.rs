@@ -1,4 +1,5 @@
 mod complex_data;
+mod entities;
 mod simple_value;
 mod value_objects;
 mod workflow;
