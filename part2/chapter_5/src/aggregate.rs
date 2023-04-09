@@ -26,30 +26,34 @@ struct OrderLine {
 #[derive(Debug, PartialEq, Clone)]
 struct Order {
     order_lines: Vec<OrderLine>,
+    total_price: Price,
 }
 
 fn change_order_line_price(order: &Order, order_line_id: &OrderLineId, new_price: &Price) -> Order {
-    let order_line = order
+    let order_line_pos = order
         .order_lines
         .iter()
-        .find(|line| line.order_line_id == order_line_id.to_owned())
+        .position(|line| line.order_line_id == order_line_id.to_owned())
         .unwrap();
+
+    let order_line = order.order_lines.get(order_line_pos).unwrap().clone();
+
     let new_order_line = OrderLine {
         price: new_price.clone(),
         ..order_line.clone()
     };
-    let mut new_order_lines = order
-        .order_lines
-        .clone()
-        .iter()
-        .filter(|line| line.order_line_id != order_line_id.to_owned())
-        .map(|line| line.to_owned())
-        .collect::<Vec<_>>();
 
-    new_order_lines.push(new_order_line);
-    new_order_lines.sort_by(|a, b| a.order_line_id.0.partial_cmp(&b.order_line_id.0).unwrap());
+    let mut new_order_lines = order.order_lines.clone();
+
+    let _old_order_line = std::mem::replace(&mut new_order_lines[order_line_pos], new_order_line);
+
+    let new_total_price = new_order_lines
+        .iter()
+        .map(|line| line.price.0 * line.quantity.0)
+        .sum::<i64>();
     let new_order = Order {
         order_lines: new_order_lines,
+        total_price: Price(new_total_price),
         ..order.clone()
     };
 
@@ -81,6 +85,7 @@ mod test {
                     ..order_line.clone()
                 },
             ],
+            total_price: Price(2_000),
         };
 
         let expected = Order {
@@ -95,6 +100,7 @@ mod test {
                     ..order_line.clone()
                 },
             ],
+            total_price: Price(3_000),
         };
 
         let actual = change_order_line_price(&order, &OrderLineId(1), &Price(2_000));
