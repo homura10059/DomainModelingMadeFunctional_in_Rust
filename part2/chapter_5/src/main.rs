@@ -1,3 +1,4 @@
+mod aggregate;
 mod complex_data;
 mod entities;
 mod simple_value;
