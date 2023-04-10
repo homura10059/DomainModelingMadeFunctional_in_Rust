@@ -8,6 +8,9 @@ struct Price(i64);
 struct OrderLineId(i64);
 
 #[derive(Debug, PartialEq, Clone)]
+struct CustomerId(i64);
+
+#[derive(Debug, PartialEq, Clone)]
 struct ProductCode(String);
 
 #[derive(Debug, PartialEq, Clone)]
@@ -26,6 +29,7 @@ struct OrderLine {
 #[derive(Debug, PartialEq, Clone)]
 struct Order {
     order_lines: Vec<OrderLine>,
+    customer_id: CustomerId,
     total_price: Price,
 }
 
@@ -55,7 +59,7 @@ fn change_order_line_price(order: &Order, order_line_id: &OrderLineId, new_price
     Order {
         order_lines: new_order_lines,
         total_price: Price(new_total_price),
-        // ..order.clone() // 他の要素があるなら必要
+        ..order.clone()
     }
 }
 
@@ -84,6 +88,7 @@ mod test {
                     ..order_line.clone()
                 },
             ],
+            customer_id: CustomerId(1),
             total_price: Price(2_000),
         };
 
@@ -99,6 +104,7 @@ mod test {
                     ..order_line.clone()
                 },
             ],
+            customer_id: CustomerId(1),
             total_price: Price(3_000),
         };
 
