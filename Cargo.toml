@@ -2,6 +2,7 @@
 
 members = [
     "part2/*",
+    "part3/*",
 ]
 
 resolver = "2"
