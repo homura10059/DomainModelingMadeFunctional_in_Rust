@@ -1,5 +1,6 @@
-use crate::address::{Address, UnvalidatedAddress};
+use crate::address::{Address, CheckAddressExists, UnvalidatedAddress};
 use crate::customer::{CustomerInfo, UnvalidatedCustomer};
+use crate::product_code::CheckProductCodeExists;
 use anyhow::{bail, Error, Result};
 
 #[derive(Debug, PartialEq)]

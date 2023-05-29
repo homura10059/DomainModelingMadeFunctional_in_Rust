@@ -13,6 +13,11 @@ impl String50 {
         Self(truncate(s.as_ref(), 50).to_string())
     }
 
+    pub fn try_new(s: Option<String>) -> Option<Self> {
+        let str = s?;
+        Some(Self::new(str))
+    }
+
     pub fn value(&self) -> &str {
         &self.0
     }
