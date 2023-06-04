@@ -1,2 +1,2 @@
 #[derive(Debug, PartialEq)]
-pub struct EmailAddress(String);
+pub struct EmailAddress(pub String);

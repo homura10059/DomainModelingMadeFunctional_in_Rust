@@ -1,6 +1,6 @@
-use crate::address::{Address, CheckAddressExists, UnvalidatedAddress};
+use crate::address::{to_address, Address, CheckedAddress, UnvalidatedAddress};
 use crate::customer::{CustomerInfo, UnvalidatedCustomer};
-use crate::product_code::CheckProductCodeExists;
+use crate::product_code::ProductCode;
 use anyhow::{bail, Error, Result};
 
 #[derive(Debug, PartialEq)]
@@ -41,35 +41,34 @@ struct ValidatedOrder {
     order_lines: Vec<ValidatedOrderLine>,
 }
 
-trait ValidateOrder {
-    fn validate_order(
-        check_product_code_exists: impl CheckProductCodeExists,
-        check_address_exists: impl CheckAddressExists,
-        unvalidated_order: UnvalidatedOrder,
-    ) -> Result<ValidatedOrder, Vec<ValidationError>>;
-}
+fn validate_order<F1, F2>(
+    check_product_code_exists: F1,
+    check_address_exists: &F2,
+    unvalidated_order: UnvalidatedOrder,
+) -> Result<ValidatedOrder>
+where
+    F1: Fn(&ProductCode) -> bool,
+    F2: Fn(&UnvalidatedAddress) -> CheckedAddress,
+{
+    let order_id = OrderId::try_new(unvalidated_order.order_id)?;
 
-struct ValidateOrderImpl;
-impl ValidateOrder for ValidatedOrderImple {
-    fn validate_order(
-        check_product_code_exists: impl CheckProductCodeExists,
-        check_address_exists: impl CheckAddressExists,
-        unvalidated_order: UnvalidatedOrder,
-    ) -> Result<ValidatedOrder, Vec<ValidationError>> {
-        let order_id = OrderId::try_new(unvalidated_order.order_id)?;
+    let customer_info = CustomerInfo::from(unvalidated_order.customer_info);
+    let sipping_address = to_address(
+        check_address_exists,
+        unvalidated_order.sipping_address.clone(),
+    );
+    let billing_address = to_address(
+        check_address_exists,
+        unvalidated_order.sipping_address.clone(),
+    );
 
-        let customer_info = CustomerInfo::from(unvalidated_order.customer_info);
-        let sipping_address = Address::from(unvalidated_order.sipping_address.clone());
-        let billing_address = Address::from(unvalidated_order.sipping_address.clone());
-
-        Ok(ValidatedOrder {
-            order_id,
-            customer_info,
-            sipping_address,
-            billing_address,
-            order_lines: vec![],
-        })
-    }
+    Ok(ValidatedOrder {
+        order_id,
+        customer_info,
+        sipping_address,
+        billing_address,
+        order_lines: vec![],
+    })
 }
 
 #[cfg(test)]

@@ -1,6 +1,7 @@
 use crate::strings::String50;
 use anyhow::Error;
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct UnvalidatedAddress {
     street: String,
     city: String,
@@ -35,12 +36,11 @@ pub struct Address {
     zip_code: ZipCode,
 }
 
-pub trait AddressChecker {
-    fn check_address_exists(&self, address: &UnvalidatedAddress) -> CheckedAddress;
-}
-
-fn to_address(checker: impl AddressChecker, unvalidated_address: UnvalidatedAddress) -> Address {
-    let checked_address = checker.check_address_exists(&unvalidated_address);
+pub fn to_address<F>(check_address_exists: F, unvalidated_address: UnvalidatedAddress) -> Address
+where
+    F: Fn(&UnvalidatedAddress) -> CheckedAddress,
+{
+    let checked_address = check_address_exists(&unvalidated_address);
     let address_line1 = String50::new(checked_address.address_line1);
     let address_line2 = String50::try_new(checked_address.address_line2);
     let address_line3 = String50::try_new(checked_address.address_line3);
